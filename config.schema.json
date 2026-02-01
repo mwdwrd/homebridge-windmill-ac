@@ -2,6 +2,8 @@
   "pluginAlias": "HomebridgeWindmillAC",
   "pluginType": "accessory",
   "singular": false,
+  "headerDisplay": "This plugin supports Windmill AC units and Air Purifiers. Use 'HomebridgeWindmillAC' for AC units and 'HomebridgeWindmillAirPurifier' for Air Purifiers.",
+  "footerDisplay": "For help finding your Auth Token, visit the [Windmill Dashboard](https://dashboard.windmillair.com) and look in the 'Auth Token' column of your device list.",
   "schema": {
     "type": "object",
     "properties": {
@@ -9,14 +11,25 @@
         "title": "Name",
         "type": "string",
         "required": true,
-        "default": "Windmill AC"
+        "default": "Windmill AC",
+        "description": "The name that will appear in HomeKit"
       },
       "token": {
-        "title": "Token",
+        "title": "Auth Token",
         "type": "string",
         "required": true,
-        "description": "See Configuration section from README for help."
+        "description": "The Auth Token from the Windmill Dashboard (visible in the device list)"
       }
     }
-  }
+  },
+  "layout": [
+    {
+      "type": "fieldset",
+      "title": "Device Configuration",
+      "items": [
+        "name",
+        "token"
+      ]
+    }
+  ]
 }

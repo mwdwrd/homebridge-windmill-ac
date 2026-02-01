@@ -12,6 +12,7 @@ import { WindmillThermostatAccessoryConfig } from './types';
 import { FanSpeed, Mode, WindmillService } from './services/WindmillService';
 import { sleep } from './helpers/sleep';
 import { celsiusToFahrenheit, fahrenheitToCelsius } from './helpers/temperature';
+import { initAirPurifierAccessory } from './airPurifierAccessory';
 
 /*
  * IMPORTANT NOTICE
@@ -44,6 +45,9 @@ let hap: HAP;
 export = (api: API) => {
   hap = api.hap;
   api.registerAccessory(ACCESSORY_NAME, WindmillThermostatAccessory);
+
+  // Also register the Air Purifier accessory
+  initAirPurifierAccessory(api);
 };
 
 class WindmillThermostatAccessory implements AccessoryPlugin {
@@ -57,6 +61,7 @@ class WindmillThermostatAccessory implements AccessoryPlugin {
   private readonly thermostatService: Service;
   private readonly informationService: Service;
   private readonly fanService: Service;
+  private readonly powerConsumptionService: Service;
 
   private displayUnits: number;
 
@@ -113,6 +118,14 @@ class WindmillThermostatAccessory implements AccessoryPlugin {
       .onGet(this.handleGetFanRotationSpeed.bind(this))
       .onSet(this.handleSetFanRotationSpeed.bind(this));
 
+    // Create a power consumption sensor (using LightSensor where lux = watts)
+    this.powerConsumptionService = new hap.Service.LightSensor('Power Consumption');
+    this.powerConsumptionService.getCharacteristic(hap.Characteristic.CurrentAmbientLightLevel)
+      .setProps({
+        minValue: 0,
+        maxValue: 2000, // Max watts for an AC
+      })
+      .onGet(this.handleGetPowerConsumption.bind(this));
 
     // Set the thermostat service as the primary service
     this.thermostatService.setPrimaryService(true);
@@ -346,6 +359,13 @@ class WindmillThermostatAccessory implements AccessoryPlugin {
     }
   }
 
+  async handleGetPowerConsumption(): Promise<CharacteristicValue> {
+    this.log.debug('Triggered GET PowerConsumption');
+    const watts = await this.windmill.getPowerConsumption();
+    // Return at least 0.0001 because HomeKit doesn't like 0 for light sensors
+    return Math.max(watts, 0.0001);
+  }
+
   /*
    * This method is called directly after creation of this instance.
    * It should return all services which should be added to the accessory.
@@ -355,6 +375,7 @@ class WindmillThermostatAccessory implements AccessoryPlugin {
       this.thermostatService,
       this.informationService,
       this.fanService,
+      this.powerConsumptionService,
     ];
   }
 

@@ -9,6 +9,7 @@ export enum Pin {
     TARGET_TEMP = 'V2',
     MODE = 'V3',
     FAN = 'V4',
+    POWER_CONSUMPTION = 'V5',
 }
 
 enum ModeInt {
@@ -76,6 +77,13 @@ export class WindmillService extends BlynkService {
     const value = await this.getPinValue(Pin.FAN);
     this.log.debug(`Fan speed is ${value}`);
     return value as FanSpeed;
+  }
+
+  public async getPowerConsumption(): Promise<number> {
+    this.log.debug('Getting power consumption');
+    const value = await this.getPinValue(Pin.POWER_CONSUMPTION);
+    this.log.debug(`Power consumption is ${value}W`);
+    return parseFloat(value) || 0;
   }
 
   public async setPower(value: boolean): Promise<void> {
