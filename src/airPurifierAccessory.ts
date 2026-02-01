@@ -71,7 +71,7 @@ class WindmillAirPurifierAccessory implements AccessoryPlugin {
       .onSet(this.handleSetLockPhysicalControls.bind(this));
 
     // Create Air Quality service
-    this.airQualityService = new hap.Service.AirQualitySensor('Air Quality');
+    this.airQualityService = new hap.Service.AirQualitySensor(`${this.name} Air Quality`);
     this.airQualityService.getCharacteristic(hap.Characteristic.AirQuality)
       .onGet(this.handleGetAirQuality.bind(this));
 
@@ -79,27 +79,27 @@ class WindmillAirPurifierAccessory implements AccessoryPlugin {
       .onGet(this.handleGetPM25Density.bind(this));
 
     // Create Filter Maintenance service
-    this.filterMaintenanceService = new hap.Service.FilterMaintenance('Filter');
+    this.filterMaintenanceService = new hap.Service.FilterMaintenance(`${this.name} Filter`);
     this.filterMaintenanceService.getCharacteristic(hap.Characteristic.FilterChangeIndication)
       .onGet(this.handleGetFilterChangeIndication.bind(this));
 
     this.filterMaintenanceService.getCharacteristic(hap.Characteristic.FilterLifeLevel)
       .onGet(this.handleGetFilterLifeLevel.bind(this));
 
-    // Create Autofade switch
-    this.autofadeSwitch = new hap.Service.Switch('Autofade', 'autofade');
+    // Create Autofade switch (display auto-dimming)
+    this.autofadeSwitch = new hap.Service.Switch(`${this.name} Autofade`, 'autofade');
     this.autofadeSwitch.getCharacteristic(hap.Characteristic.On)
       .onGet(this.handleGetAutofade.bind(this))
       .onSet(this.handleSetAutofade.bind(this));
 
-    // Create Beeping switch
-    this.beepingSwitch = new hap.Service.Switch('Beeping', 'beeping');
+    // Create Beeping switch (button sounds)
+    this.beepingSwitch = new hap.Service.Switch(`${this.name} Beeping`, 'beeping');
     this.beepingSwitch.getCharacteristic(hap.Characteristic.On)
       .onGet(this.handleGetBeeping.bind(this))
       .onSet(this.handleSetBeeping.bind(this));
 
-    // Create White Noise switch (ON = White Noise, OFF = Whisper)
-    this.whiteNoiseSwitch = new hap.Service.Switch('White Noise', 'whitenoise');
+    // Create White Noise switch (ON = White Noise, OFF = Whisper sleep sound)
+    this.whiteNoiseSwitch = new hap.Service.Switch(`${this.name} White Noise`, 'whitenoise');
     this.whiteNoiseSwitch.getCharacteristic(hap.Characteristic.On)
       .onGet(this.handleGetWhiteNoise.bind(this))
       .onSet(this.handleSetWhiteNoise.bind(this));
